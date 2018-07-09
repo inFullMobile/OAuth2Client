@@ -1,3 +1,9 @@
+# iFM FORK DESCRIPTION
+Forked for project coty-visit. 
+Contains fix for connections opened from non-main thread (previosly connection delegate methods wouldn't be called in such situation).
+This fix is required for Microsoft Graph API access token refreshing from non-main thread.
+Problem description in task: https://infullmobile.atlassian.net/browse/LCSD-29
+
 # OAuth2Client
 
 An OAuth2 library for Mac OS X & iOS (Cocoa & Cocoa touch).
