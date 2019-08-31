@@ -25,16 +25,16 @@
 
 #pragma mark Notifications
 
-NSString * const NXOAuth2AccountDidChangeUserDataNotification = @"NXOAuth2AccountDidChangeUserDataNotification";
-NSString * const NXOAuth2AccountDidChangeAccessTokenNotification = @"NXOAuth2AccountDidChangeAccessTokenNotification";
-NSString * const NXOAuth2AccountDidLoseAccessTokenNotification = @"NXOAuth2AccountDidLoseAccessTokenNotification";
-NSString * const NXOAuth2AccountDidFailToGetAccessTokenNotification = @"NXOAuth2AccountDidFailToGetAccessTokenNotification";
+NSString *const NXOAuth2AccountDidChangeUserDataNotification = @"NXOAuth2AccountDidChangeUserDataNotification";
+NSString *const NXOAuth2AccountDidChangeAccessTokenNotification = @"NXOAuth2AccountDidChangeAccessTokenNotification";
+NSString *const NXOAuth2AccountDidLoseAccessTokenNotification = @"NXOAuth2AccountDidLoseAccessTokenNotification";
+NSString *const NXOAuth2AccountDidFailToGetAccessTokenNotification = @"NXOAuth2AccountDidFailToGetAccessTokenNotification";
 
 #pragma mark -
 
 @interface NXOAuth2Account () <NXOAuth2ClientDelegate, NXOAuth2TrustDelegate>
 
-@property (nonatomic, strong) NXOAuth2AccessToken *accessToken;
+@property(nonatomic, strong) NXOAuth2AccessToken *accessToken;
 @end
 
 #pragma mark -
@@ -43,8 +43,7 @@ NSString * const NXOAuth2AccountDidFailToGetAccessTokenNotification = @"NXOAuth2
 
 #pragma mark Lifecycle
 
-- (instancetype)initAccountWithOAuthClient:(NXOAuth2Client *)anOAuthClient accountType:(NSString *)anAccountType;
-{
+- (instancetype)initAccountWithOAuthClient:(NXOAuth2Client *)anOAuthClient accountType:(NSString *)anAccountType; {
     self = [self initAccountWithAccessToken:anOAuthClient.accessToken
                                 accountType:anAccountType];
     if (self) {
@@ -54,8 +53,7 @@ NSString * const NXOAuth2AccountDidFailToGetAccessTokenNotification = @"NXOAuth2
     return self;
 }
 
-- (instancetype)initAccountWithAccessToken:(NXOAuth2AccessToken *)anAccessToken accountType:(NSString *)anAccountType;
-{
+- (instancetype)initAccountWithAccessToken:(NXOAuth2AccessToken *)anAccessToken accountType:(NSString *)anAccountType; {
     self = [super init];
     if (self) {
         accountType = anAccountType;
@@ -82,8 +80,7 @@ NSString * const NXOAuth2AccountDidFailToGetAccessTokenNotification = @"NXOAuth2
 
 #pragma mark Accessors
 
-- (NXOAuth2Client *)oauthClient;
-{
+- (NXOAuth2Client *)oauthClient; {
     @synchronized (oauthClient) {
         if (oauthClient == nil) {
             NSDictionary *configuration = [[NXOAuth2AccountStore sharedStore] configurationForAccountType:self.accountType];
@@ -121,8 +118,7 @@ NSString * const NXOAuth2AccountDidFailToGetAccessTokenNotification = @"NXOAuth2
     return oauthClient;
 }
 
-- (void)setUserData:(id<NSObject,NSCoding,NSCopying>)someUserData;
-{
+- (void)setUserData:(id <NSObject, NSCoding, NSCopying>)someUserData; {
     if (userData != someUserData) {
         @synchronized (userData) {
             userData = someUserData;
@@ -132,16 +128,14 @@ NSString * const NXOAuth2AccountDidFailToGetAccessTokenNotification = @"NXOAuth2
     }
 }
 
-- (NSString *)description;
-{
+- (NSString *)description; {
     return [NSString stringWithFormat:@"<NXOAuth2Account identifier:'%@' accountType:'%@' accessToken:%@ userData:%@>", self.identifier, self.accountType, self.accessToken, self.userData];
 }
 
 
 #pragma mark NXOAuth2TrustDelegate
 
--(NXOAuth2TrustMode)connection:(NXOAuth2Connection *)connection trustModeForHostname:(NSString *)hostname;
-{
+- (NXOAuth2TrustMode)connection:(NXOAuth2Connection *)connection trustModeForHostname:(NSString *)hostname; {
     NXOAuth2TrustModeHandler handler = [[NXOAuth2AccountStore sharedStore] trustModeHandlerForAccountType:self.accountType];
     if (handler) {
         return handler(connection, hostname);
@@ -150,8 +144,7 @@ NSString * const NXOAuth2AccountDidFailToGetAccessTokenNotification = @"NXOAuth2
     }
 }
 
--(NSArray *)connection:(NXOAuth2Connection *)connection trustedCertificatesForHostname:(NSString *)hostname;
-{
+- (NSArray *)connection:(NXOAuth2Connection *)connection trustedCertificatesForHostname:(NSString *)hostname; {
     NXOAuth2TrustedCertificatesHandler handler = [[NXOAuth2AccountStore sharedStore] trustedCertificatesHandlerForAccountType:self.accountType];
     return handler(hostname);
 }
@@ -159,38 +152,32 @@ NSString * const NXOAuth2AccountDidFailToGetAccessTokenNotification = @"NXOAuth2
 
 #pragma mark NXOAuth2ClientDelegate
 
-- (void)oauthClientNeedsAuthentication:(NXOAuth2Client *)client;
-{
+- (void)oauthClientNeedsAuthentication:(NXOAuth2Client *)client; {
     // This delegate method will never be called, because an account
     // contains only an authenticated oauch client.
 }
 
-- (void)oauthClientDidGetAccessToken:(NXOAuth2Client *)client;
-{
+- (void)oauthClientDidGetAccessToken:(NXOAuth2Client *)client; {
     accessToken = oauthClient.accessToken;
     [[NSNotificationCenter defaultCenter] postNotificationName:NXOAuth2AccountDidChangeAccessTokenNotification
                                                         object:self];
 }
 
-- (void)oauthClientDidLoseAccessToken:(NXOAuth2Client *)client;
-{
+- (void)oauthClientDidLoseAccessToken:(NXOAuth2Client *)client; {
     accessToken = nil;
     [[NSNotificationCenter defaultCenter] postNotificationName:NXOAuth2AccountDidLoseAccessTokenNotification
                                                         object:self];
 }
 
-- (void)oauthClientDidRefreshAccessToken:(NXOAuth2Client *)client;
-{
+- (void)oauthClientDidRefreshAccessToken:(NXOAuth2Client *)client; {
     accessToken = oauthClient.accessToken;
     [[NSNotificationCenter defaultCenter] postNotificationName:NXOAuth2AccountDidChangeAccessTokenNotification
                                                         object:self];
 }
 
-- (void)oauthClient:(NXOAuth2Client *)client didFailToGetAccessTokenWithError:(NSError *)error;
-{
+- (void)oauthClient:(NXOAuth2Client *)client didFailToGetAccessTokenWithError:(NSError *)error; {
     accessToken = nil;
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObject:error
-                                                         forKey:NXOAuth2AccountStoreErrorKey];
+    NSDictionary *userInfo = @{NXOAuth2AccountStoreErrorKey: error};
     [[NSNotificationCenter defaultCenter] postNotificationName:NXOAuth2AccountDidFailToGetAccessTokenNotification
                                                         object:self
                                                       userInfo:userInfo];
@@ -199,16 +186,14 @@ NSString * const NXOAuth2AccountDidFailToGetAccessTokenNotification = @"NXOAuth2
 
 #pragma mark NSCoding
 
-- (void)encodeWithCoder:(NSCoder *)aCoder
-{
+- (void)encodeWithCoder:(NSCoder *)aCoder {
     [aCoder encodeObject:identifier forKey:@"identifier"];
     [aCoder encodeObject:accountType forKey:@"accountType"];
     [aCoder encodeObject:accessToken forKey:@"accessToken"];
     [aCoder encodeObject:userData forKey:@"userData"];
 }
 
-- (instancetype)initWithCoder:(NSCoder *)aDecoder
-{
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if (self = [super init]) {
         userData = [aDecoder decodeObjectForKey:@"userData"];
         accessToken = [aDecoder decodeObjectForKey:@"accessToken"];
