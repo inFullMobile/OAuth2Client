@@ -64,7 +64,7 @@ to your targets *Link Binary With Libraries*)
 
 ### Configure your Client
 
-The best place to configure your client is `+[UIApplicationDelegate initialize]` on iOS or `+[NSApplicationDelegate initialize]` on Mac OS X. There you can call `-[NXOAuth2AccountStore setClientID:secret:authorizationURL:tokenURL:redirectURL:forAccountType:]` on the shared account store for each service you want to have access to from your application. The account type is a string which is used as an identifier for a certain service.
+The best place to configure your client is `+[UIApplicationDelegate initialize]` on iOS or `+[NSApplication.sharedApplicationDelegate initialize]` on Mac OS X. There you can call `-[NXOAuth2AccountStore setClientID:secret:authorizationURL:tokenURL:redirectURL:forAccountType:]` on the shared account store for each service you want to have access to from your application. The account type is a string which is used as an identifier for a certain service.
 
 <pre>
 + (void)initialize;
